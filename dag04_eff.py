@@ -26,7 +26,7 @@ to_remove=deque([])
 for key in rolls:
     roll_count=0
     nbrs=[]
-    [r,c]=key
+    r,c=key
     #Kijk in de vakjes rondom (offset rond r en cmet dr en dc)
     for dr,dc in ((-1,-1),(-1,0),(-1,1),(1,-1),(1,0),(1,1),(0,-1),(0,1)):
         new_key=(r+dr,c+dc)
@@ -55,4 +55,5 @@ while to_remove:
 
 print("Part 1",p1)
 print("Part 2",len(removed))
+
 print("--- %s ms ---" % ((time.time_ns() - start_time)/1000000))
