@@ -16,7 +16,7 @@ for r,line in enumerate(f):
     line=line.replace('(','').replace(')','').replace('=','').replace('\n','')
     for c,s in enumerate(line):
         if s=='@':
-            key=str(r)+','+str(c)
+            key=(r,c)
             rolls[key]=0
     
 f.close()
@@ -26,26 +26,29 @@ to_remove=deque([])
 for key in rolls:
     roll_count=0
     nbrs=[]
-    [r,c]=[int(d) for d in key.split(',')]
-    for dr in [-1,0,1]:
-        for dc in [-1,0,1]:
-            if dr==0 and dc==0:
-                continue
-            new_key=str(r+dr)+','+str(c+dc)
-            if new_key in rolls:
-                roll_count+=1
-                nbrs.append(new_key)
+    [r,c]=key
+    #Kijk in de vakjes rondom (offset rond r en cmet dr en dc)
+    for dr,dc in ((-1,-1),(-1,0),(-1,1),(1,-1),(1,0),(1,1),(0,-1),(0,1)):
+        new_key=(r+dr,c+dc)
+        if new_key in rolls:
+            #Tel het aantal buren, en maak een lijstje van de buur'keys'
+            roll_count+=1
+            nbrs.append(new_key)
     if roll_count<=max_r:
+        #Maak een lijst van te verwijderen blokjes voor p2
         to_remove.append(key)
         p1+=1
     rolls[key]=[roll_count,nbrs]
 
+#Set van verwijderde items, geeft uiteindelijk p2 en wordt gebruikt als check
 removed=set(to_remove)
 while to_remove:
     remove_roll = to_remove.popleft()
+    #Verwijder een punt bij alle buren en controleer of ze wegmogen
     nbrs=rolls[remove_roll][1]
     for nbr in nbrs:
         rolls[nbr][0]-=1
+        #Als een van de buren van een verwijderd blokje minder dan max_r buren heeft en nog niet op de removed lijst staat mag hij weg
         if rolls[nbr][0]<=max_r and nbr not in removed:
             to_remove.append(nbr)
             removed.add(nbr)   
