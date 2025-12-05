@@ -25,8 +25,8 @@ f.close()
 
 ranges_compiled=list()
 for new_a,new_b in ingredient_ranges:
-    left_ranges=[]
-    right_ranges=[]
+    left_ranges=0
+    right_ranges=0
     left=new_a
     right=new_b
     
@@ -34,43 +34,46 @@ for new_a,new_b in ingredient_ranges:
         #Links valt ergens voor
         if new_a<=a:
             #Bewaar alle ranges links tot deze, grens voor nieuwe range komt in left
-            left_ranges=ranges_compiled[:i]
+            left_ranges=i
             left=new_a
             break
         
         #Links valt nergens voor, maar wel ergens tussen of sluit exact aan
         if new_a>a and new_a<=b+1:
-            left_ranges=ranges_compiled[:i]
+            left_ranges=i
             #Behoud originele linkerkant van deze range
             left=a
             break
         #We zijn al ergens voorbij, maar niet direct stoppen want hij kan nog in een andere vallen
         if new_a>b:
-            left_ranges=ranges_compiled[:i+1]
+            left_ranges=i+1
             left=new_a
 
         
     for i,[a,b] in enumerate(ranges_compiled):
         #rechts valt ergens voor, niet verder zoeken
         if new_b<a-1:
-            right_ranges=ranges_compiled[i:]
+            right_ranges=i
             right=new_b
             break
 
         #recht valt ergens tussen, niet verder zoeken
         if new_b>=a-1 and new_b<=b:
-            right_ranges=ranges_compiled[i+1:]
+            right_ranges=i+1
             right=b
             break
         #We zijn all ergens voorbij, maar hij kan nog in de volgende vallen
         if new_b>b:
-            right_ranges=ranges_compiled[i+1:]
+            right_ranges=i+1
             right=new_b
 
+    #Bouw alles samen
+    ranges_l=ranges_compiled[:left_ranges]
+    ranges_r=ranges_compiled[right_ranges:]
     ranges_compiled=[]
-    ranges_compiled.extend(left_ranges)
+    ranges_compiled.extend(ranges_l)
     ranges_compiled.append([left,right])
-    ranges_compiled.extend(right_ranges)
+    ranges_compiled.extend(ranges_r)
 
                      
 for a,b in ranges_compiled:
