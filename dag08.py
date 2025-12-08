@@ -31,7 +31,7 @@ box_group=dict() #Voor elke junction box bijhouden in welke group hij zit
 group_boxes=dict() #Voor elke group bijhouden welke boxes erin zitten
 while True:
     [_,ind1,ind2]=distances[i]
-    i+=1
+
     if ind1 in box_group and ind2 not in box_group:
         #ind2 toevoegen aan de groep van ind1
         group=box_group[ind1]
@@ -46,12 +46,11 @@ while True:
         #Samenvoegen van twee groepen junction boxes
         group1=box_group[ind1]
         group2=box_group[ind2]
-        if group1==group2:
-            continue
-        for index in group_boxes[group2]:
-            box_group[index]=group1
-        group_boxes[group1].extend(group_boxes[group2])
-        del group_boxes[group2]
+        if group1!=group2:
+            for index in group_boxes[group2]:
+                box_group[index]=group1
+            group_boxes[group1].extend(group_boxes[group2])
+            del group_boxes[group2]
     else:
         #Nieuwe groep junction boxes
         group_boxes[circuit_count]=[ind1]
@@ -59,6 +58,7 @@ while True:
         box_group[ind1]=circuit_count
         box_group[ind2]=circuit_count
         circuit_count+=1
+        
     #Conditie p1
     if i==999: 
         p1_sizes=[]   
@@ -67,7 +67,9 @@ while True:
         p1_sizes.sort(reverse=True)
     #Conditie p2 en klaar
     if len(group_boxes)==1 and len(box_group)==len(box):
-           break   
+           break
+    i+=1
+       
 print("Part 1",p1_sizes[0]*p1_sizes[1]*p1_sizes[2])
 print("Part 2",box[ind1][0]*box[ind2][0])
 print("--- %s ms ---" % ((time.time_ns() - start_time)/1000000))
