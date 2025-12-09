@@ -9,7 +9,7 @@ import time
 start_time = time.time_ns()
 
 def in_contour(x_test,y_test,corners):
-    #Kijk of x_test,y_test valt binnen de contour gemaakt aan de hand van de corners (alleen horizontaal en verticaal, nog....)
+    #Kijk of x_test,y_test valt binnen de contour gemaakt aan de hand van opeenvolgende corners (alleen horizontaal en verticaal, nog....)
     #Oneven aantal -> binnen contour -> True , even aantal->buiten contour -> False
     if (x_test,y_test) in in_contour_mem:
         return in_contour_mem[(x_test,y_test)]
@@ -38,9 +38,10 @@ def in_contour(x_test,y_test,corners):
             continue
         
         #Verticale lijn eindigt precies op dezelfde hoogte als testpunt, nu moeten we oppassen!!
-        #       __        ___
-        #  0  _|1     0  _| | 0
-        #    |
+        # Anders count=3 bij beide onderstaande scenarios!
+        #       __       
+        #  0  _|1     0  _  0
+        #    |          | |
         elif x1<=x_test and (y1==y_test or y2==y_test):
             if (y1<y2 and prev_dir=='up') or (y1>y2 and prev_dir=='down'):
                 #Lijn gaat door in dezelfde richting na de knik, gebied rechts is dus goed
@@ -64,7 +65,7 @@ def no_intersect(path1,path2):
     #Kijk of de bedachte rechthoek geen lijnen doorkruist. 1 als er geen kruizing is en 0 als er wel een kruizing is
     for [x1,y1],[x2,y2] in zip(path1,path1[1:]):
         for [x3,y3],[x4,y4] in zip(path2,path2[1:]):
-            if (x1==x2 and x3==x4) or (y1==y2 and y3==y4):
+            if (x1==x2 and x3==x4) or (y1==y2 and y3==y4): #Parallel
                 continue
             x1_min,x1_max,y1_min,y1_max=min(x1,x2),max(x1,x2),min(y1,y2),max(y1,y2)
             x2_min,x2_max,y2_min,y2_max=min(x3,x4),max(x3,x4),min(y3,y4),max(y3,y4)
@@ -85,11 +86,12 @@ for i,line in enumerate(f):
     line=line.replace('(','').replace(')','').replace('=','').replace('\n','')
     corners.append([int(d) for d in line.split(',')])
 f.close()
+#Maak het cirkeltje rond
+corners.append(corners[0])
 
 p2=0
 p1=0
-#Maak het cirkeltje rond
-corners.append(corners[0])
+
 in_contour_mem=dict()
 for ind1,[a,b] in enumerate(corners):
     for ind2,[c,d] in enumerate(corners[ind1+1:]):
@@ -98,9 +100,9 @@ for ind1,[a,b] in enumerate(corners):
         if area<p2:
             #geen moeite doen als het record niet verbroken kan worden
             continue
-        rectangle=[[a,b],[a,d],[c,d],[c,b],[a,b]]
         #Kijk of de lijnen van de rechthoek de contour nergens doorkruisen
         #Kijk of de twee verzonnen hoekpunten binnen de contour liggen
+        rectangle=[[a,b],[a,d],[c,d],[c,b],[a,b]]
         if in_contour(a,d,corners) and in_contour(c,b,corners) and no_intersect(rectangle,corners):
             p2=area
             
