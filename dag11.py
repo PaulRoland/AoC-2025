@@ -7,15 +7,10 @@ New template 02-12-2025
 
 import time
 start_time = time.time_ns()
-p1=0
-p2=0
-f = open("input.txt", "r")
-
 def n_paths(start,end):
     n=0
     if start in mem:
         return mem[start]
-    global p2
     if start==end:
         return 1
     if start=='out':
@@ -25,9 +20,9 @@ def n_paths(start,end):
         n+=n_paths(to,end)
     mem[start]=n
     return n
-
-     
+    
 conn=dict()
+f = open("input.txt", "r")
 for i,line in enumerate(f):
     line=line.replace(': ',' ').replace('\n','').split(' ')
     conn[line[0]]=line[1:]
@@ -35,7 +30,6 @@ f.close()
 
 mem=dict()
 p1=n_paths('you','out')
-mem=dict()
 #Mogelijke paden
 paths=[['svr','fft','dac','out'],
        ['svr','dac','fft','out']]
@@ -47,5 +41,5 @@ for path in paths:
     p2+=path_nsol
 
 print("Part 1",p1)
-print("Part 1",p2)
+print("Part 2",p2)
 print("--- %s ms ---" % ((time.time_ns() - start_time)/1000000))
